@@ -73,5 +73,17 @@ const patchStudent=async(req,res)=>{
     }
 };
 
+const getStudentByUsername=async(req,res)=>{
+    try{
+        const myStudent=await Student.findOne({Username:req.params.username});
+        if(!myStudent){
+            return res.status(404).json({message:'Student not found'});
+        }
+        res.status(200).json(myStudent);
+    }catch(error){
+        console.error('Error fetching student by username:',error);
+        res.status(500).json({message:'Error fetching student by username',error:error.message});
+    }
+};
 
-module.exports={createStudent, getStudents, deleteStudent, updateStudent, patchStudent};
+module.exports={createStudent, getStudents, deleteStudent, updateStudent, patchStudent, getStudentByUsername};
