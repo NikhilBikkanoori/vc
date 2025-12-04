@@ -74,16 +74,16 @@ export default function AdminStudents({
     const username = form.get("username")?.trim();
     const password = form.get("password");
 
-    if (!roll || !name) return alert("Name and roll required");
-    if (!email) return alert("Email is required");
-    if (!phone) return alert("Phone is required");
-    if (!dob) return alert("Date of Birth is required");
-    if (!gender) return alert("Gender is required");
-    if (!address) return alert("Address is required");
-    if (!dept) return alert("Department is required");
-    if (!parentField) return alert("Parent field is required");
-    if (!username) return alert("Username is required");
-    if (!password && sEditIdx === null) return alert("Password is required");
+    // if (!roll || !name) return alert("Name and roll required");
+    // if (!email) return alert("Email is required");
+    // if (!phone) return alert("Phone is required");
+    // if (!dob) return alert("Date of Birth is required");
+    // if (!gender) return alert("Gender is required");
+    // if (!address) return alert("Address is required");
+    // if (!dept) return alert("Department is required");
+    // if (!parentField) return alert("Parent field is required");
+    // if (!username) return alert("Username is required");
+    // if (!password && sEditIdx === null) return alert("Password is required");
 
     // Prepare data for API (matching backend field names)
     const studentData = {
@@ -105,7 +105,7 @@ export default function AdminStudents({
       
       if (sEditIdx !== null && editingId) {
         // UPDATE existing student
-        await axios.put(`${API_BASE}/students/${editingId}`, studentData);
+        await axios.put(`${API_BASE}/update-student/${editingId}`, studentData);
         alert("Student updated successfully!");
       } else {
         // CREATE new student
@@ -130,13 +130,13 @@ export default function AdminStudents({
   }
 
   async function handleDelete(student, idx) {
-    if (!window.confirm(`Delete student "${student._id}" and their credentials?`)) {
+    if (!window.confirm(`Delete student "${student.roll}" and their credentials?`)) {
       return;
     }
     
     try {
       setLoading(true);
-      await axios.delete(`${API_BASE}/students/${student._id}`);
+      await axios.delete(`${API_BASE}/delete-student/${student.roll}`);
       alert("Student deleted successfully!");
       await fetchStudents();
     } catch (err) {
@@ -160,9 +160,7 @@ export default function AdminStudents({
     sFormRef.current.parent.value = student.parent || "";
     sFormRef.current.username.value = student.username || "";
     sFormRef.current.password.value = ""; // Don't show password
-    
-    setSEditIdx(idx);
-    setEditingId(student._id);
+    setEditingId(student.roll);
   }
 
   function handleCancelEdit() {

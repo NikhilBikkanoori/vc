@@ -23,7 +23,7 @@ const StudentLogin = () => {
       localStorage.setItem("token", res.data.token);
       
       // Store student ID for profile page
-      localStorage.setItem("studentId", res.data.student._id);
+      localStorage.setItem("studentname", res.data.student.Username);
       
       // Store student basic info for quick access
       localStorage.setItem("studentData", JSON.stringify(res.data.student));

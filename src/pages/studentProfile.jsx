@@ -10,37 +10,57 @@ export default function StudentProfile() {
   useEffect(() => {
     fetchLoggedInStudent();
   }, []);
-
-  function fetchLoggedInStudent() {
-    // Get student ID from localStorage (stored during login)
-    const studentId = localStorage.getItem("studentId");
-    
-    if (!studentId) {
-      setError("Not logged in. Please login first.");
+  const fetchLoggedInStudent = async () => {
+    try {
+      // Get student ID from localStorage (stored during login)
+      const studentdatastr = localStorage.getItem("studentname");
+      if (!studentdatastr) {
+        setError("Not logged in. Please login first.");
+        setLoading(false);
+        // Redirect to login after 2 seconds
+        setTimeout(() => navigate("/student-login"), 2000);
+        return;
+      }
+      // Fetch student data by ID
+      const response = await fetch(`http://localhost:5000/api/student-admin/get-student-by-username/${studentdatastr}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch student data");
+      }
+      const data = await response.json();
+      setStudent(data);
       setLoading(false);
-      // Redirect to login after 2 seconds
-      setTimeout(() => navigate("/student-login"), 2000);
-      return;
     }
+    catch (err) {
+      console.error("Error fetching student:", err);
+      setError("Failed to load profile. Please try again.");
+      setLoading(false);
+    } 
+  };
+  //     setError("Not logged in. Please login first.");
+  //     setLoading(false);
+  //     // Redirect to login after 2 seconds
+  //     setTimeout(() => navigate("/StudentLogin"), 2000);
+  //     return;
+  //   }
     
-    // Fetch student data by ID
-    fetch(`http://localhost:5000/api/student-admin/students/${studentId}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch student data");
-        }
-        return response.json();
-      })
-      .then(data => {
-        setStudent(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error fetching student:", err);
-        setError("Failed to load profile. Please try again.");
-        setLoading(false);
-      });
-  }
+  //   // Fetch student data by ID
+  //   fetch(`http://localhost:5000/api/student-admin/get-students/${studentdatastr}`)
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch student data");
+  //       }
+  //       return response.json();
+  //     })
+  //     .then(data => {
+  //       setStudent(data);
+  //       setLoading(false);
+  //     })
+  //     .catch(err => {
+  //       console.error("Error fetching student:", err);
+  //       setError("Failed to load profile. Please try again.");
+  //       setLoading(false);
+  //     });
+  // }
 
   return (
     <div style={{ background: "#192047", minHeight: "100vh", margin: 0 }}>
