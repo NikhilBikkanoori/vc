@@ -398,7 +398,7 @@ const Dashboard = () => {
           {/* Profile Mini */}
           <div className="profile-mini" onClick={toggleProfileDropdown}>
             <div className="avatar">A</div>
-            <div className="meta">Alice Kumar<small>CSE, 2nd Yr</small></div>
+            <div className="meta">{}<small>CSE, 2nd Yr</small></div>
             
             {/* Profile Dropdown */}
             {profileDropdownVisible && (

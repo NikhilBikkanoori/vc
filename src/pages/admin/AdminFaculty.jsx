@@ -14,6 +14,7 @@ export default function AdminFaculty({
   const [qFaculty, setQFaculty] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  
 
   // Fetch faculty from API on component mount
   useEffect(() => {

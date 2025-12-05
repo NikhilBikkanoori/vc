@@ -1,12 +1,34 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ParentLogin = () => {
   const navigate = useNavigate();
+  const [Username, setUsername] = React.useState("");
+  const [Password, setPassword] = React.useState("");
+  const [error, setError] = React.useState("");
 
-  const handleLogin = (e) => {
+
+ const handleLogin = async (e) => {
     e.preventDefault();
-    navigate('/parent-dashboard');
+    setError("");
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/parent-login/login", {
+        Username: Username,
+        Password: Password,
+      });
+
+      // Store JWT token
+      localStorage.setItem("token", res.data.token);
+
+      // Navigate to dashboard
+      navigate("/parent-dashboard");
+
+    } catch (err) {
+      console.log(err);
+      setError(err.response?.data?.msg || "Login failed");
+    }
   };
 
   return (
@@ -18,28 +40,56 @@ const ParentLogin = () => {
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem' }}>
         <div style={{ background: '#262C53', borderRadius: '12px', width: '100%', maxWidth: '400px', boxShadow: '0 6px 18px rgba(0,0,0,0.1)', padding: '2rem' }}>
           <h2 style={{ textAlign: 'center', color: '#A2F4F9', marginBottom: '1.5rem' }}>
-            <i className="fas fa-user-shield" style={{ marginRight: '0.5rem' }}></i> Parent Login
+            <i className="fas fa-user-graduate" style={{ marginRight: '0.5rem' }}></i> Student Login
           </h2>
+
+          {error && (
+            <p style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{error}</p>
+          )}
 
           <form onSubmit={handleLogin}>
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#A2F4F9', fontWeight: 500 }}>Parent ID</label>
-              <input type="text" placeholder="Enter your parent ID" style={{ width: '100%', color:'black',padding: '0.75rem', border: '1px solid #ccc', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }} required />
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#A2F4F9', fontWeight: 500 }}>Parent Id</label>
+              <input
+                type="text"
+                value={Username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your student ID"
+                style={{ width: '100%', color:'black', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '6px', fontSize: '1rem' }}
+                required
+              />
             </div>
 
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem', color: '#A2F4F9', fontWeight: 500 }}>Password</label>
-              <input type="password" placeholder="Enter your password" style={{ width: '100%',color:'black', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }} required />
+              <input
+                type="password"
+                value={Password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                style={{ width: '100%', color:'black', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '6px', fontSize: '1rem' }}
+                required
+              />
             </div>
 
-            <button type="submit" style={{ width: '100%', padding: '0.75rem', background: 'linear-gradient(135deg, #192047, #262C53)', color: '#A2F4F9', border: 'none', borderRadius: '6px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '1rem', transition: 'all 0.3s ease' }}>
+            <button
+              type="submit"
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                background: 'linear-gradient(135deg, #192047, #262C53)',
+                color: '#A2F4F9',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                marginTop: '1rem',
+                transition: '0.3s'
+              }}
+            >
               Login
             </button>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', fontSize: '0.9rem' }}>
-              <a href="#" style={{ color: '#A2F4F9', textDecoration: 'none' }}>Forgot Password?</a>
-              <a href="/" style={{ color: '#A2F4F9', textDecoration: 'none' }}>Back to Home</a>
-            </div>
           </form>
         </div>
       </div>
