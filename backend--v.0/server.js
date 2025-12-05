@@ -8,6 +8,7 @@ const studentLoginRoutes = require('./routes/studentLoginRoutes');
 const parentAdminRoutes = require('./routes/parentAdminRoutes');
 const feesAdminRoutes = require('./routes/feesAdminRoutes');
 const parentLoginRoutes = require('./routes/parentLoginRoutes');
+const marksAdminRoutes = require('./routes/marksAdminRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,6 +23,7 @@ app.use('/api/student-login', studentLoginRoutes);
 app.use('/api/parent-admin', parentAdminRoutes);
 app.use('/api/fees-admin', feesAdminRoutes);
 app.use('/api/parent-login', parentLoginRoutes);
+app.use('/api/marks-admin', marksAdminRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
