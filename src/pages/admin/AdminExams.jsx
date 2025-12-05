@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
-export default function AdminExams({ exams, setExams, escapeHtml }) {
+export default function AdminExams({ exams = [], setExams, escapeHtml }) {
   const examFormRef = useRef();
   const [examEditIdx, setExamEditIdx] = useState(null);
   const [qExam, setQExam] = useState("");
@@ -25,9 +25,9 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
   }, [setExams]);
 
   /* ---------------- SEARCH FILTER ---------------- */
-  const filteredExams = exams.filter((x) =>
+  const filteredExams = Array.isArray(exams) ? exams.filter((x) =>
     (x.studentId || "").toLowerCase().includes(qExam.toLowerCase())
-  );
+  ) : [];
 
   /* ---------------- CREATE / UPDATE ---------------- */
   function handleExamSubmit(e) {
@@ -40,7 +40,7 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
     const subjects = [];
     for (let i = 1; i <= 5; i++) {
       const sub = form.get(`sub${i}`)?.trim();
-      const marks = form.get(`marks${i}`);
+      const marks = form.get(`marks${i}`)?.trim();
       if (!sub) return alert("All 5 subjects must have names.");
       if (!marks) return alert("All 5 subjects must have marks.");
       subjects.push({ subject: sub, marks });
@@ -102,7 +102,7 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
           <React.Fragment key={n}>
             <input
               name={`sub${n}`}
-              placeholder={`Subject ${n}`}
+              placeholder={`Subject${n}`}
               className="border p-2 rounded custom-input"
               required
             />
@@ -140,12 +140,12 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
             className="bg-white p-3 rounded shadow flex justify-between"
           >
             <div>
-              <div className="font-bold">Student: {escapeHtml(x.studentId)}</div>
+              <div className="font-bold">Student: {escapeHtml(x.studentId || "")}</div>
 
               <ul className="ml-4 mt-1 text-sm">
-                {x.subjects.map((s, idx) => (
+                {(x.subjects || []).map((s, idx) => (
                   <li key={idx}>
-                    {escapeHtml(s.subject)} — {escapeHtml(String(s.marks))}
+                    {escapeHtml(s.subject || "")} — {escapeHtml(String(s.marks || ""))}
                   </li>
                 ))}
               </ul>
@@ -153,10 +153,10 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
 
             <button
               onClick={() => {
-                examFormRef.current.studentId.value = x.studentId;
-                x.subjects.forEach((s, idx) => {
-                  examFormRef.current[`sub${idx + 1}`].value = s.subject;
-                  examFormRef.current[`marks${idx + 1}`].value = s.marks;
+                examFormRef.current.studentId.value = x.studentId || "";
+                (x.subjects || []).forEach((s, idx) => {
+                  examFormRef.current[`sub${idx + 1}`].value = s.subject || "";
+                  examFormRef.current[`marks${idx + 1}`].value = s.marks || "";
                 });
                 setExamEditIdx(i);
               }}
@@ -168,5 +168,5 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
         ))}
       </ul>
     </section>
-  );
+  );
 }
