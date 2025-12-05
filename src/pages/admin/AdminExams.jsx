@@ -63,6 +63,23 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
     examFormRef.current.reset();
   }
 
+  // Inject custom input styles on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !document.getElementById('custom-input-style')) {
+      const style = document.createElement('style');
+      style.id = 'custom-input-style';
+      style.innerHTML = `
+        .custom-input::placeholder {
+          color: #a0aec0; /* Tailwind's gray-400 */
+        }
+        .custom-input:not(:placeholder-shown) {
+          color: #4f46e5 !important; /* Tailwind's indigo-600 */
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }, []);
+
   return (
     <section>
       <h2 className="text-xl font-bold mb-2">Exams</h2>
@@ -73,10 +90,11 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
         onSubmit={handleExamSubmit}
         className="bg-white p-4 rounded shadow grid grid-cols-2 gap-3"
       >
+
         <input
           name="studentId"
           placeholder="Student ID"
-          className="border p-2 rounded col-span-2"
+          className="border p-2 rounded col-span-2 custom-input"
           required
         />
 
@@ -85,14 +103,14 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
             <input
               name={`sub${n}`}
               placeholder={`Subject ${n}`}
-              className="border p-2 rounded"
+              className="border p-2 rounded custom-input"
               required
             />
             <input
               name={`marks${n}`}
               type="number"
               placeholder={`Marks ${n}`}
-              className="border p-2 rounded"
+              className="border p-2 rounded custom-input"
               required
             />
           </React.Fragment>
@@ -110,7 +128,7 @@ export default function AdminExams({ exams, setExams, escapeHtml }) {
       <input
         value={qExam}
         onChange={(e) => setQExam(e.target.value)}
-        className="mt-4 p-2 border rounded w-full"
+        className="mt-4 p-2 border rounded w-full custom-input"
         placeholder="Search by Student ID"
       />
 
