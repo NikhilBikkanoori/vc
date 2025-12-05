@@ -1,75 +1,168 @@
-import React, { useRef, useState } from "react";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 
-export default function AdminParents({
-  parents,
-  setParents,
-  students,
-  users,
-  setUsers,
-  escapeHtml,
-}) {
+const API_BASE = "http://localhost:5000/api/parent-admin";
+const STUDENT_API_BASE = "http://localhost:5000/api/student-admin";
+
+export default function AdminParents({ escapeHtml }) {
   const pFormRef = useRef();
+  const [parents, setParents] = useState([]);
+  const [students, setStudents] = useState([]);
   const [pEditIdx, setPEditIdx] = useState(null);
   const [qParent, setQParent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Fetch parents and students on component mount
+  useEffect(() => {
+    fetchParents();
+    fetchStudents();
+  }, []);
+
+  const fetchStudents = async () => {
+    try {
+      const res = await axios.get(`${STUDENT_API_BASE}/get-students`);
+      // Map API fields to local state fields
+      const mapped = res.data.map((s) => ({
+        _id: s._id,
+        name: s.FullName,
+        roll: s.RollNo,
+        email: s.Email,
+        dept: s.Department,
+      }));
+      setStudents(mapped);
+    } catch (err) {
+      console.error("Error fetching students:", err);
+    }
+  };
+
+  const fetchParents = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${API_BASE}/parents`);
+      // Map API fields to local state fields
+      const mapped = response.data.map((p) => ({
+        _id: p._id,
+        name: p.FullName,
+        email: p.Email,
+        phone: p.Phone,
+        address: p.Address,
+        linkedStudent: p.Student ? p.Student.FullName : "Not linked",
+        linkedStudentRoll: p.Student ? p.Student.RollNo : "",
+        username: p.Username,
+      }));
+      setParents(mapped);
+      setError("");
+    } catch (err) {
+      console.error("Error fetching parents:", err);
+      setError("Failed to fetch parents from database");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredParents = parents.filter(
     (p) =>
       (p.name || "").toLowerCase().includes(qParent.toLowerCase()) ||
-      (p.pid || "").toLowerCase().includes(qParent.toLowerCase()) ||
-      (p.linkedStudent || "").toLowerCase().includes(qParent.toLowerCase())
+      (p.email || "").toLowerCase().includes(qParent.toLowerCase()) ||
+      (p.username || "").toLowerCase().includes(qParent.toLowerCase())
   );
 
-  function handleParentSubmit(e) {
+  const handleParentSubmit = async (e) => {
     e.preventDefault();
-    const form = new FormData(pFormRef.current);
-    const name = form.get("name")?.trim();
-    const pid = form.get("pid")?.trim();
-    if (!name || !pid) return alert("Name and parent ID required");
-    if (pEditIdx !== null) {
-      setParents((arr) => {
-        const copy = [...arr];
-        copy[pEditIdx] = {
-          ...copy[pEditIdx],
-          name,
-          email: form.get("email"),
-          phone: form.get("phone"),
-          address: form.get("address"),
-          linkedStudent: form.get("linkedStudent") || null,
-        };
-        return copy;
-      });
+    setError("");
+
+    const form = pFormRef.current;
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const phone = form.phone.value.trim();
+    const address = form.address.value.trim();
+    const linkedStudent = form.linkedStudent.value.trim();
+    const username = form.username.value.trim();
+    const password = form.password.value;
+
+    // if (!name || !email || !phone || !linkedStudent || !username || !password) {
+    //   setError("Please fill all required fields");
+    //   return;
+    // }
+
+    // Prepare data for API (matching backend field names)
+    const parentData = {
+      FullName: name,
+      Email: email,
+      Phone: phone,
+      Address: address,
+      StudentRoll: linkedStudent, // Backend expects StudentRoll to find the student
+      Username: username,
+      Password: password,
+    };
+
+    try {
+      setLoading(true);
+
+      // CREATE new parent
+      await axios.post(`${API_BASE}/parents`, parentData);
+      alert("Parent created successfully!");
+
+      // Refresh the list from database
+      await fetchParents();
+
+      // Reset form
       setPEditIdx(null);
-      pFormRef.current.reset();
+      form.reset();
+    } catch (err) {
+      console.error("Error saving parent:", err);
+      setError(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Failed to save parent"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setPEditIdx(null);
+    pFormRef.current.reset();
+  };
+
+  const handleDeleteParent = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete parent "${name}"?`)) {
       return;
     }
-    if (parents.find((x) => x.pid === pid)) return alert("Parent ID exists");
-    setParents((s) => [
-      ...s,
-      {
-        name,
-        pid,
-        email: form.get("email"),
-        phone: form.get("phone"),
-        address: form.get("address"),
-        linkedStudent: form.get("linkedStudent") || null,
-        createdAt: new Date().toISOString(),
-      },
-    ]);
-    const pu = form.get("username")?.trim();
-    const pp = form.get("password");
-    if (pu && pp)
-      setUsers((u) => ({
-        ...u,
-        parents: [...(u.parents || []), { pid, username: pu, password: pp }],
-      }));
-    pFormRef.current.reset();
-  }
+    try {
+      setLoading(true);
+      await axios.delete(`${API_BASE}/parents/${id}`);
+      alert("Parent deleted successfully!");
+      await fetchParents();
+    } catch (err) {
+      console.error("Error deleting parent:", err);
+      setError(err.response?.data?.message || "Failed to delete parent");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section>
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Parents</h2>
+        <button
+          onClick={fetchParents}
+          className="bg-green-500 text-white px-3 py-1 rounded text-sm"
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Refresh"}
+        </button>
       </div>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mt-2">
+          {error}
+        </div>
+      )}
+
       <form
         ref={pFormRef}
         onSubmit={handleParentSubmit}
@@ -77,100 +170,126 @@ export default function AdminParents({
       >
         <input
           name="name"
-          placeholder="Parent Name"
-          className="border p-2 rounded text-gray-800 bg-white"
-          required
-        />
-        <input
-          name="pid"
-          placeholder="Parent ID (unique)"
+          placeholder="Parent Full Name *"
           className="border p-2 rounded text-gray-800 bg-white"
           required
         />
         <input
           name="email"
           type="email"
-          placeholder="Email"
+          placeholder="Email *"
           className="border p-2 rounded text-gray-800 bg-white"
+          required
         />
         <input
           name="phone"
           type="tel"
-          placeholder="Phone"
+          placeholder="Phone *"
           className="border p-2 rounded text-gray-800 bg-white"
+          required
         />
         <input
           name="address"
           placeholder="Address"
-          className="border p-2 rounded col-span-2 text-gray-800 bg-white"
+          className="border p-2 rounded text-gray-800 bg-white"
         />
-        <select name="linkedStudent" className="border p-2 rounded text-gray-800 bg-white">
-          <option value="">Link to Student</option>
-          {students.map((s) => (
-            <option key={s.roll} value={s.roll}>
-              {s.name} ({s.roll})
-            </option>
-          ))}
+        <select
+          name="linkedStudent"
+          className="border p-2 rounded text-gray-800 bg-white"
+          required
+        >
+          <option value="">Link to Student (Roll No) *</option>
+          {students &&
+            students.map((s) => (
+              <option key={s.roll} value={s.roll}>
+                {s.name} ({s.roll})
+              </option>
+            ))}
         </select>
         <input
           name="username"
-          placeholder="Login username (optional)"
+          placeholder="Login Username *"
           className="border p-2 rounded text-gray-800 bg-white"
+          required
         />
         <input
           name="password"
           type="password"
-          placeholder="Login password (optional)"
+          placeholder="Login Password *"
           className="border p-2 rounded text-gray-800 bg-white"
+          required
         />
-        <button
-          type="submit"
-          className="col-span-2 bg-purple-600 text-white py-2 rounded"
-        >
-          Save Parent
-        </button>
+        <div className="col-span-2 flex gap-2">
+          <button
+            type="submit"
+            className="flex-1 bg-purple-600 text-white py-2 rounded"
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Save Parent"}
+          </button>
+          {pEditIdx !== null && (
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="bg-gray-500 text-white px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
+
       <input
         value={qParent}
         onChange={(e) => setQParent(e.target.value)}
         className="mt-4 p-2 border rounded w-full text-gray-800 bg-white"
-        placeholder="Search by name, id, linked student"
+        placeholder="Search by name, email, username"
       />
+
+      {loading && <p className="text-center mt-4 text-gray-500">Loading...</p>}
+
       <ul className="mt-4 space-y-2">
         {filteredParents.map((p, i) => (
           <li
-            key={p.pid + i}
+            key={p._id || i}
             className="bg-white p-3 flex justify-between rounded shadow"
           >
             <div>
-              <strong className="text-gray-800">{escapeHtml(p.name)}</strong>{" "}
-              <span className="text-sm text-gray-600">
-                ({escapeHtml(p.pid)})
-              </span>
+              <strong className="text-gray-800">{escapeHtml(p.name)}</strong>
               <div className="text-sm text-gray-600">
-                Linked Student: {escapeHtml(p.linkedStudent || "—")}
+                {escapeHtml(p.email)} • {escapeHtml(String(p.phone))}
               </div>
+              <div className="text-sm text-gray-600">
+                Username: <strong>{escapeHtml(p.username)}</strong>
+              </div>
+              <div className="text-sm text-gray-600">
+                Linked Student:{" "}
+                <strong className={p.linkedStudentRoll ? "text-green-600" : "text-red-500"}>
+                  {p.linkedStudentRoll
+                    ? `${escapeHtml(p.linkedStudent)} (${escapeHtml(p.linkedStudentRoll)})`
+                    : "Not linked"}
+                </strong>
+              </div>
+              {p.address && (
+                <div className="text-sm text-gray-600">
+                  Address: {escapeHtml(p.address)}
+                </div>
+              )}
             </div>
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center">
               <button
-                onClick={() => {
-                  pFormRef.current.name.value = p.name;
-                  pFormRef.current.pid.value = p.pid;
-                  pFormRef.current.pid.disabled = true;
-                  pFormRef.current.email.value = p.email;
-                  pFormRef.current.phone.value = p.phone;
-                  pFormRef.current.address.value = p.address || "";
-                  pFormRef.current.linkedStudent.value = p.linkedStudent || "";
-                  setPEditIdx(i);
-                }}
-                className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
+                onClick={() => handleDeleteParent(p._id, p.name)}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                disabled={loading}
               >
-                Edit
+                Delete
               </button>
-              {/* <button onClick={()=>{ if(confirm('Delete parent and credentials?')){ del('parents', i); setUsers(u=> ({ ...u, parents: (u.parents||[]).filter(us=>us.pid!==p.pid) })); } }} className="bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</button>  */}
             </div>
           </li>
         ))}
+        {!loading && filteredParents.length === 0 && (
+          <p className="text-center text-gray-500">No parents found.</p>
+        )}
       </ul>
     </section>
   );
