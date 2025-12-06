@@ -6,23 +6,63 @@ export default function AdminExams({ exams = [], setExams, escapeHtml }) {
   const [examEditIdx, setExamEditIdx] = useState(null);
   const [qExam, setQExam] = useState("");
 
-  /* ---------------- FETCH ALL STUDENT MARKS ---------------- */
-  useEffect(() => {
-    const fetchAllMarks = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:5000/api/student-marks/get-marks"
-        );
+  /* ---------------- FETCH MARKS BY USERNAME ---------------- */
 
-        // FIXED HERE
-        setExams(res.data.students); 
-      } catch (err) {
-        console.error("Failed to load exams", err);
+
+useEffect(() => {
+  const fetchMarks = async () => {
+    try {
+      const username = localStorage.getItem("Username");
+      if (!username) {
+        console.error("Username not found in localStorage");
+        return;
       }
-    };
 
-    fetchAllMarks();
-  }, [setExams]);
+      const res = await axios.get(
+        `http://localhost:5000/api/marks-admin/get-marks-by-username/${username}`
+      );
+
+      // Ensure safe data mapping even if API contains wrong fields
+      const formatted = res.data.map((m) => {
+        return {
+          studentId: m.Student?.Username || "",
+
+          subjects: [
+            {
+              subject: m.Subject1 || "",
+              marks: m.Subject1Marks ?? m.Subject1 ?? ""
+            },
+            {
+              subject: m.Subject2 || "",
+              marks: m.Subject2Marks ?? m.Subject2 ?? ""
+            },
+            {
+              subject: m.Subject3 || "",
+              marks: m.Subject3Marks ?? m.Subject3 ?? ""
+            },
+            {
+              subject: m.Subject4 || "",
+              marks: m.Subject4Marks ?? m.Subject4 ?? ""
+            },
+            {
+              subject: m.Subject5 || "",
+              marks: m.Subject5Marks ?? m.Subject5 ?? ""
+            }
+          ]
+        };
+      });
+
+      setExams(formatted);
+    } catch (err) {
+      console.error("Failed to load marks:", err);
+    }
+  };
+
+  fetchMarks();
+}, [setExams]);
+
+
+
 
   /* ---------------- SEARCH FILTER ---------------- */
   const filteredExams = Array.isArray(exams) ? exams.filter((x) =>

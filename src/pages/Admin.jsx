@@ -32,38 +32,83 @@ export default function AdminPanel() {
   const passRef = useRef();
 
   // Data states
-  const [students, setStudents] = useState(() =>
-    JSON.parse(localStorage.getItem("students") || "[]")
-  );
-  const [faculty, setFaculty] = useState(() =>
-    JSON.parse(localStorage.getItem("faculty") || "[]")
-  );
-  const [parents, setParents] = useState(() =>
-    JSON.parse(localStorage.getItem("parents") || "[]")
-  );
-  const [departments, setDepartments] = useState(() =>
-    JSON.parse(localStorage.getItem("departments") || "[]")
-  );
-  const [attendance, setAttendance] = useState(() =>
-    JSON.parse(localStorage.getItem("attendance") || "[]")
-  );
-  const [exams, setExams] = useState(() =>
-    JSON.parse(localStorage.getItem("exams") || "[]")
-  );
-  const [fees, setFees] = useState(() =>
-    JSON.parse(localStorage.getItem("fees") || "[]")
-  );
-  const [users, setUsers] = useState(() =>
-    JSON.parse(
-      localStorage.getItem(USERS_KEY) ||
-        JSON.stringify({
-          admins: [{ id: "A001", username: "admin", password: "admin123" }],
-          students: [],
-          faculty: [],
-          parents: [],
-        })
-    )
-  );
+  const [students, setStudents] = useState(() => {
+    try {
+      const val = localStorage.getItem("students");
+      return val && val !== "undefined" ? JSON.parse(val) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [faculty, setFaculty] = useState(() => {
+    try {
+      const val = localStorage.getItem("faculty");
+      return val && val !== "undefined" ? JSON.parse(val) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [parents, setParents] = useState(() => {
+    try {
+      const val = localStorage.getItem("parents");
+      return val && val !== "undefined" ? JSON.parse(val) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [departments, setDepartments] = useState(() => {
+    try {
+      const val = localStorage.getItem("departments");
+      return val && val !== "undefined" ? JSON.parse(val) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [attendance, setAttendance] = useState(() => {
+    try {
+      const val = localStorage.getItem("attendance");
+      return val && val !== "undefined" ? JSON.parse(val) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [exams, setExams] = useState(() => {
+    try {
+      const val = localStorage.getItem("exams");
+      return val && val !== "undefined" ? JSON.parse(val) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [fees, setFees] = useState(() => {
+    try {
+      const val = localStorage.getItem("fees");
+      return val && val !== "undefined" ? JSON.parse(val) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [users, setUsers] = useState(() => {
+    try {
+      const val = localStorage.getItem(USERS_KEY);
+      if (val && val !== "undefined") {
+        return JSON.parse(val);
+      }
+      return {
+        admins: [{ id: "A001", username: "admin", password: "admin123" }],
+        students: [],
+        faculty: [],
+        parents: [],
+      };
+    } catch {
+      return {
+        admins: [{ id: "A001", username: "admin", password: "admin123" }],
+        students: [],
+        faculty: [],
+        parents: [],
+      };
+    }
+  });
 
   // Keep localStorage in sync
   useEffect(

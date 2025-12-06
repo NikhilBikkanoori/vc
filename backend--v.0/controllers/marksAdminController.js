@@ -39,5 +39,19 @@ const getMarks=async(req,res)=>{
         res.status(500).json({message:'Error fetching marks',error:error.message});
     }
 };
+const getMarksByUsername=async(req,res)=>{
+    try{
+        const {Username}=req.params;
+        const student=await Student.findOne({Username});
+        if(!student){
+            return res.status(404).json({message:'Student not found'});
+        }
+        const marksList=await Marks.find({Student:student._id}).populate('Student');
+        res.status(200).json(marksList);
+    }catch(error){  
+        console.error('Error fetching marks by username:',error);
+        res.status(500).json({message:'Error fetching marks by username',error:error.message});
+    }
+};
 
-module.exports={createMarks,getMarks};
+module.exports={createMarks,getMarks,getMarksByUsername};
