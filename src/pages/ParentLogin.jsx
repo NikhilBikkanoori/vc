@@ -14,7 +14,7 @@ const ParentLogin = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/parent-login/login", {
+      const res = await axios.post("https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/parent-login/login", {
         Username: Username,
         Password: Password,
       });

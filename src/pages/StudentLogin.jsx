@@ -14,7 +14,7 @@ const StudentLogin = () => {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/student-login/login", {
+      const res = await axios.post("https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/student-login/login", {
         Username: studentId,
         Password: password,
       });

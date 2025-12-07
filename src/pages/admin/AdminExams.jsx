@@ -19,7 +19,7 @@ useEffect(() => {
       }
 
       const res = await axios.get(
-        `http://localhost:5000/api/marks-admin/get-marks-by-username/${username}`
+        `https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/marks-admin/get-marks-by-username/${username}`
       );
 
       // Ensure safe data mapping even if API contains wrong fields

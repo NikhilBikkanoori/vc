@@ -22,7 +22,7 @@ export default function StudentProfile() {
         return;
       }
       // Fetch student data by ID
-      const response = await fetch(`http://localhost:5000/api/student-admin/get-student-by-username/${studentdatastr}`);
+      const response = await fetch(`https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/student-admin/get-student-by-username/${studentdatastr}`);
       if (!response.ok) {
         throw new Error("Failed to fetch student data");
       }

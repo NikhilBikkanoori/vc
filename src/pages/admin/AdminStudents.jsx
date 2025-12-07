@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 
-const API_BASE = "http://localhost:5000/api/student-admin";
+const API_BASE = "https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/student-admin";
 
 export default function AdminStudents({
   departments,
