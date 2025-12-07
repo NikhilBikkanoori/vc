@@ -10,6 +10,7 @@ import Admin from '../pages/Admin';
 import Counseling from '../pages/Counseling';
 import StudentProfile from '../pages/studentProfile';
 import MentorProfile from '../pages/MentorProfile';
+import ParentProfile from '../pages/ParentProfile';
 import AddStudent from "../pages/AddStudent";
 import ManageUsers from '../pages/ManageUsers.';
 import AdminPanel from '../pages/Admin';
@@ -30,6 +31,7 @@ function AppRoutes() {
       <Route path="/admin/*" element={<AdminPanel />} />
       <Route path="/StudentProfile" element={<StudentProfile />} />
       <Route path="/MentorProfile" element={<MentorProfile />} />
+      <Route path="/parent-profile" element={<ParentProfile />} />
       <Route path="/add-student" element={<AddStudent />} />
       <Route path="/manageuser" element={<ManageUsers />} />
       <Route path="/display" element={<Display />} />

@@ -267,24 +267,42 @@ export default function AdminPanel() {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-100">
         <div className="bg-white shadow-lg rounded-lg p-8 w-96">
-          <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
-          <form onSubmit={handleLogin} className="space-y-3">
-            <input
-              ref={userRef}
-              className="w-full border p-2 rounded"
-              placeholder="Username"
-              required
-            />
-            <input
-              ref={passRef}
-              type="password"
-              className="w-full border p-2 rounded"
-              placeholder="Password"
-              required
-            />
+          <h2 className="text-2xl font-bold text-center mb-4">Admin Login</h2>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="relative">
+              <input
+                ref={userRef}
+                id="username"
+                className="w-full border p-2 pt-5 rounded peer text-gray-800 bg-white focus:outline-none focus:border-purple-600"
+                placeholder=" "
+                required
+              />
+              <label 
+                htmlFor="username"
+                className="absolute left-2 top-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-purple-600"
+              >
+                Username
+              </label>
+            </div>
+            <div className="relative">
+              <input
+                ref={passRef}
+                id="password"
+                type="password"
+                className="w-full border p-2 pt-5 rounded peer text-gray-800 bg-white focus:outline-none focus:border-purple-600"
+                placeholder=" "
+                required
+              />
+              <label 
+                htmlFor="password"
+                className="absolute left-2 top-1 text-xs text-gray-500 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-purple-600"
+              >
+                Password
+              </label>
+            </div>
             <button
               type="submit"
-              className="w-full bg-purple-600 text-white py-2 rounded"
+              className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition"
             >
               Sign in
             </button>

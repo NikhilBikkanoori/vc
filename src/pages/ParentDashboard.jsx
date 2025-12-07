@@ -1,9 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ParentDashboard = () => {
   const navigate = useNavigate();
   const [profileDropdownVisible, setProfileDropdownVisible] = useState(false);
+  const [parentData, setParentData] = useState({
+    name: "Parent",
+    email: "",
+    phone: "",
+    address: "",
+    studentId: ""
+  });
+  const [childData, setChildData] = useState({
+    name: "Loading...",
+    rollNo: "",
+    department: ""
+  });
+
+  // Load parent data from localStorage and fetch child data
+  useEffect(() => {
+    const stored = localStorage.getItem("parentData");
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        setParentData(data);
+        
+        // Fetch linked student data
+        if (data.studentId) {
+          fetchChildData(data.studentId);
+        }
+      } catch (_) {}
+    }
+  }, []);
+
+  // Fetch child/student data from API
+  const fetchChildData = async (studentId) => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/student-admin/get-students");
+      const student = res.data.find(s => s._id === studentId);
+      if (student) {
+        setChildData({
+          name: student.FullName || "Unknown",
+          rollNo: student.RollNo || "",
+          department: student.Department || ""
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching child data:", err);
+    }
+  };
+
+  // Get initials for avatar
+  const getInitials = () => {
+    return (parentData.name || "P")
+      .split(" ")
+      .map((x) => x[0] || "")
+      .join("")
+      .toUpperCase();
+  };
 
   const styles = `
     :root {
@@ -243,9 +298,9 @@ const ParentDashboard = () => {
 
         <div className="top-right">
           <div className="profile-mini" onClick={() => setProfileDropdownVisible(!profileDropdownVisible)}>
-            <div className="avatar">M</div>
+            <div className="avatar">{getInitials()}</div>
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 600 }}>Mr. Mehta</div>
+              <div style={{ fontSize: '13px', fontWeight: 600 }}>{parentData.name}</div>
               <small style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.85)' }}>Parent</small>
             </div>
           </div>
@@ -253,7 +308,11 @@ const ParentDashboard = () => {
             <div className="profile-dropdown">
               <a href="/parent-profile">View Profile</a>
               <a href="/parent-settings">Settings</a>
-              <a href="/" onClick={() => navigate('/')}>Logout</a>
+              <a href="/" onClick={() => {
+                localStorage.removeItem("parentData");
+                localStorage.removeItem("isLoggedIn");
+                navigate('/');
+              }}>Logout</a>
             </div>
           )}
         </div>
@@ -262,13 +321,14 @@ const ParentDashboard = () => {
       {/* MAIN CONTENT */}
       <div className="container">
         <div className="main-content">
-          <div className="greeting">Welcome Back, Mr. Mehta</div>
+          <div className="greeting">Welcome Back, {parentData.name}</div>
 
           {/* Child Status Overview */}
           <div className="grid">
             <div className="stat-box">
               <div className="stat-label">Child Name</div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '8px' }}>Ravi Mehta</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '8px' }}>{childData.name}</div>
+              {childData.rollNo && <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: '4px' }}>Roll: {childData.rollNo}</div>}
             </div>
             <div className="stat-box">
               <div className="stat-label">Current GPA</div>

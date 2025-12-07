@@ -14,20 +14,31 @@ const ParentLogin = () => {
     setError("");
 
     try {
-      const res = await axios.post("https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/parent-login/login", {
+      const res = await axios.post("http://localhost:5000/api/parent-login/login", {
         Username: Username,
         Password: Password,
       });
 
-      // Store JWT token
-      localStorage.setItem("token", res.data.token);
+      // Store parent data in localStorage
+      const parentData = {
+        id: res.data.parent._id,
+        name: res.data.parent.FullName,
+        email: res.data.parent.Email,
+        phone: res.data.parent.Phone,
+        address: res.data.parent.Address,
+        username: res.data.parent.Username,
+        studentId: res.data.parent.Student,
+      };
+      
+      localStorage.setItem("parentData", JSON.stringify(parentData));
+      localStorage.setItem("isLoggedIn", "parent");
 
       // Navigate to dashboard
       navigate("/parent-dashboard");
 
     } catch (err) {
       console.log(err);
-      setError(err.response?.data?.msg || "Login failed");
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 

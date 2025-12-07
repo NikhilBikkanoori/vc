@@ -1,58 +1,41 @@
 import React, { useState, useEffect, useRef } from "react";
 
-export default function MentorProfile() {
-  const defaultMentor = {
+export default function ParentProfile() {
+  const defaultParent = {
     name: "",
-    dept: "",
-    id: "",
-    mobile: "",
     email: "",
-    photo: "",
-    gender: "",
+    phone: "",
     address: "",
-    dob: ""
+    username: "",
+    photo: ""
   };
 
-  const [mentor, setMentor] = useState(defaultMentor);
+  const [parent, setParent] = useState(defaultParent);
   const [preview, setPreview] = useState("");
   const fileInputRef = useRef(null);
 
   // Load from localStorage on first load
   useEffect(() => {
-    // First try to load from mentorData (from login)
-    const mentorData = localStorage.getItem("mentorData");
-    if (mentorData) {
+    const parentData = localStorage.getItem("parentData");
+    if (parentData) {
       try {
-        const data = JSON.parse(mentorData);
-        setMentor({
+        const data = JSON.parse(parentData);
+        setParent({
           name: data.name || "",
-          dept: data.department || "",
-          id: data.facultyId || "",
-          mobile: data.phone || "",
           email: data.email || "",
-          photo: data.photo || "",
-          gender: data.gender || "",
+          phone: data.phone || "",
           address: data.address || "",
-          dob: data.dob ? data.dob.split("T")[0] : ""
+          username: data.username || "",
+          photo: data.photo || ""
         });
         setPreview(data.photo || "");
       } catch (_) {}
-    } else {
-      // Fallback to old mentor storage
-      const stored = localStorage.getItem("mentor");
-      if (stored) {
-        try {
-          const obj = JSON.parse(stored);
-          setMentor((prev) => ({ ...prev, ...obj }));
-          setPreview(obj.photo || "");
-        } catch (_) {}
-      }
     }
   }, []);
 
   // Render initials when no photo
   const getInitials = () => {
-    return (mentor.name || "M")
+    return (parent.name || "P")
       .split(" ")
       .map((x) => x[0] || "")
       .join("")
@@ -66,8 +49,8 @@ export default function MentorProfile() {
 
     const reader = new FileReader();
     reader.onload = (ev) => {
-      setPreview(ev.target.result); // base64
-      setMentor({ ...mentor, photo: ev.target.result });
+      setPreview(ev.target.result);
+      setParent({ ...parent, photo: ev.target.result });
     };
     reader.readAsDataURL(f);
   };
@@ -80,15 +63,22 @@ export default function MentorProfile() {
   // Save button
   const saveDetails = () => {
     const urlInput = document.getElementById("photoUrlInput").value.trim();
-    const finalPhoto = urlInput ? urlInput : mentor.photo;
+    const finalPhoto = urlInput ? urlInput : parent.photo;
 
     const updated = {
-      ...mentor,
+      ...parent,
       photo: finalPhoto
     };
 
-    localStorage.setItem("mentor", JSON.stringify(updated));
-    window.location.href = "/dashboard"; // adjust route if needed
+    // Update parentData in localStorage
+    const existingData = localStorage.getItem("parentData");
+    if (existingData) {
+      const data = JSON.parse(existingData);
+      localStorage.setItem("parentData", JSON.stringify({ ...data, photo: finalPhoto }));
+    }
+    
+    localStorage.setItem("parent", JSON.stringify(updated));
+    window.location.href = "/parent-dashboard";
   };
 
   return (
@@ -111,7 +101,7 @@ export default function MentorProfile() {
       <div className="profile-page-full">
         {/* Back Link */}
         <div className="topbar-back">
-          <a href="/dashboard" className="small-link">
+          <a href="/parent-dashboard" className="small-link">
             ← Back to Dashboard
           </a>
         </div>
@@ -148,67 +138,47 @@ export default function MentorProfile() {
           {/* FORM SECTION */}
           <div style={{ flex: 1, minWidth: "260px" }}>
             <div className="field-row">
-              <label>Name</label>
+              <label>Full Name</label>
               <input
-                value={mentor.name}
-                onChange={(e) => setMentor({ ...mentor, name: e.target.value })}
+                value={parent.name}
+                onChange={(e) => setParent({ ...parent, name: e.target.value })}
+                readOnly
               />
             </div>
 
             <div className="field-row">
-              <label>Mentor ID</label>
+              <label>Username</label>
               <input
-                value={mentor.id}
-                onChange={(e) => setMentor({ ...mentor, id: e.target.value })}
-              />
-            </div>
-
-            <div className="field-row">
-              <label>Department</label>
-              <input
-                value={mentor.dept}
-                onChange={(e) => setMentor({ ...mentor, dept: e.target.value })}
-              />
-            </div>
-
-            <div className="field-row">
-              <label>Mobile</label>
-              <input
-                value={mentor.mobile}
-                onChange={(e) => setMentor({ ...mentor, mobile: e.target.value })}
+                value={parent.username}
+                onChange={(e) => setParent({ ...parent, username: e.target.value })}
+                readOnly
               />
             </div>
 
             <div className="field-row">
               <label>Email</label>
               <input
-                value={mentor.email}
-                onChange={(e) => setMentor({ ...mentor, email: e.target.value })}
+                value={parent.email}
+                onChange={(e) => setParent({ ...parent, email: e.target.value })}
+                readOnly
               />
             </div>
 
             <div className="field-row">
-              <label>Gender</label>
+              <label>Phone</label>
               <input
-                value={mentor.gender}
-                onChange={(e) => setMentor({ ...mentor, gender: e.target.value })}
-              />
-            </div>
-
-            <div className="field-row">
-              <label>Date of Birth</label>
-              <input
-                type="date"
-                value={mentor.dob}
-                onChange={(e) => setMentor({ ...mentor, dob: e.target.value })}
+                value={parent.phone}
+                onChange={(e) => setParent({ ...parent, phone: e.target.value })}
+                readOnly
               />
             </div>
 
             <div className="field-row">
               <label>Address</label>
               <input
-                value={mentor.address}
-                onChange={(e) => setMentor({ ...mentor, address: e.target.value })}
+                value={parent.address}
+                onChange={(e) => setParent({ ...parent, address: e.target.value })}
+                readOnly
               />
             </div>
 
@@ -226,7 +196,7 @@ export default function MentorProfile() {
                 Save
               </button>
 
-              <a href="/dashboard">
+              <a href="/parent-dashboard">
                 <button className="btn-secondary">Cancel</button>
               </a>
             </div>

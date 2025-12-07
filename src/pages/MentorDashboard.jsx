@@ -255,8 +255,8 @@ const MentorDashboard = () => {
           <div className="profile-mini" onClick={() => setProfileDropdownVisible(!profileDropdownVisible)}>
             <div className="avatar">S</div>
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 600 }}>Prof. Sharma</div>
-              <small style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.85)' }}>Mentor • CSE</small>
+              
+              <small style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.85)' }}>Mentor </small>
             </div>
           </div>
           {/* Profile Dropdown */}

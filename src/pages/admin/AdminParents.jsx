@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
 const API_BASE = "https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/parent-admin";
-const STUDENT_API_BASE = "https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/student-admin";
+const STUDENT_API_BASE = "http://localhost:5000/api/student-admin";
 
 export default function AdminParents({ escapeHtml }) {
   const pFormRef = useRef();

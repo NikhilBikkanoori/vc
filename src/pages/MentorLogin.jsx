@@ -13,20 +13,43 @@ const MentorLogin = () => {
     setError("");
 
     try {
-      const res = await axios.post("https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/faculty-login/login", {
+      const res = await axios.post("http://localhost:5000/api/faculty-login/login", {
         username: mentorId,
         password: password,
       });
 
-      // Store JWT token
-      localStorage.setItem("token", res.data.token);
+      // Fetch all faculty and find the logged in one by username
+      const facultyRes = await axios.get("http://localhost:5000/api/faculty-admin/get-fac");
+      const loggedInFaculty = facultyRes.data.find(f => f.username === mentorId);
+      
+      // Store full faculty info in localStorage
+      if (loggedInFaculty) {
+        const facultyData = {
+          id: loggedInFaculty._id,
+          facultyId: loggedInFaculty.facultyId,
+          name: loggedInFaculty.name,
+          email: loggedInFaculty.email,
+          phone: loggedInFaculty.phonenumber,
+          department: loggedInFaculty.department,
+          gender: loggedInFaculty.gender,
+          address: loggedInFaculty.address,
+          dob: loggedInFaculty.dob,
+          username: loggedInFaculty.username,
+        };
+        localStorage.setItem("mentorData", JSON.stringify(facultyData));
+      } else {
+        // Fallback to basic info from login response
+        localStorage.setItem("mentorData", JSON.stringify(res.data.faculty));
+      }
+      
+      localStorage.setItem("isLoggedIn", "mentor");
 
       // Navigate to dashboard
       navigate("/mentor-dashboard");
 
     } catch (err) {
       console.log(err);
-      setError(err.response?.data?.msg || "Login failed");
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
