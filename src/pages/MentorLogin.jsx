@@ -13,31 +13,20 @@ const MentorLogin = () => {
     setError("");
 
     try {
-      // Try Azure first, fallback to localhost
-      let res;
-      try {
-        res = await axios.post("https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/faculty-login/login", {
-          username: mentorId,
-          password: password,
-        });
-      } catch (azureErr) {
-        // If Azure fails (route not found), try localhost
-        res = await axios.post("http://localhost:5000/api/faculty-login/login", {
-          username: mentorId,
-          password: password,
-        });
-      }
+      const res = await axios.post("https://dropshieldbe-a3fmaucneacte4av.southindia-01.azurewebsites.net/api/faculty-login/login", {
+        username: mentorId,
+        password: password,
+      });
 
-      // Store faculty info in localStorage
-      localStorage.setItem("mentorData", JSON.stringify(res.data.faculty));
-      localStorage.setItem("isLoggedIn", "mentor");
+      // Store JWT token
+      localStorage.setItem("token", res.data.token);
 
       // Navigate to dashboard
       navigate("/mentor-dashboard");
 
     } catch (err) {
       console.log(err);
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.msg || "Login failed");
     }
   };
 
