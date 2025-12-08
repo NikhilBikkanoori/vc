@@ -40,6 +40,11 @@ const StudentAdminSchema = new mongoose.Schema({
         type:String,
         required:true 
     },
+    Mentor:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'FacultyAdmin',
+        required: true  
+    },
     Username:{
         type:String,
         required:true,

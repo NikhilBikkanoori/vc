@@ -323,22 +323,9 @@ export default function AdminPanel() {
       <nav className="bg-purple-700 text-white px-6 py-4 flex justify-between items-center">
         <h1 className="text-xl font-bold">Admin Panel (React)</h1>
         <div className="flex gap-2 items-center">
-          <button
-            onClick={exportData}
-            className="bg-blue-500 px-3 py-1 rounded"
-          >
-            Export JSON
-          </button>
-          <label className="bg-green-600 px-3 py-1 rounded cursor-pointer">
-            Import{" "}
-            <input type="file" onChange={importData} className="hidden" />
-          </label>
-          <button
-            onClick={() => window.print()}
-            className="bg-yellow-500 px-3 py-1 rounded"
-          >
-            Print
-          </button>
+          
+          
+          
           <button onClick={logout} className="bg-red-500 px-3 py-1 rounded">
             Logout
           </button>

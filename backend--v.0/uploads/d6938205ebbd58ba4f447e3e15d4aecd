@@ -1,0 +1,6 @@
+FullName,RollNo,Email,Phone,DateOfBirth,Gender,Department,Address,Parent,MentorRoll,Username,Password
+Varun Avisinedi,572,varun@gmail.com,783925378,2006-07-21,Male,CSE,Kandlakoya,Suresh,12,varun123,pass123
+Rahul Kumar,573,rahul@gmail.com,9876543210,2005-10-12,Male,ECE,Hyderabad,Ramesh,123,rahul573,rahul@123
+Priya Sharma,574,priya@gmail.com,9123456780,2006-03-15,Female,IT,Secunderabad,Anita,123,priya574,priya@2025
+Nikhil Verma,575,nikhil@gmail.com,9988776655,2005-11-11,Male,MECH,Kukatpally,Rajesh,123,nikhil575,mech2025
+Sneha Reddy,577,sneha@gmail.com,9876512345,2006-01-01,Female,CSE,Medchal,Lakshmi,1,sneha576,sneha123

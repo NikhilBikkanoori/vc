@@ -49,4 +49,4 @@ const facultySchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Facultyadmin', facultySchema);    
+module.exports = mongoose.model('FacultyAdmin', facultySchema);    

@@ -49,6 +49,35 @@ export default function AdminStudents({
       setLoading(false);
     }
   };
+  // inside AdminStudents.jsx
+const importData = async (e) => {
+  const csv = e.target.files[0];
+  if (!csv) return;
+
+  const formData = new FormData();
+  formData.append('file', csv);   // 👈 MUST be 'file', not 'csvFile', 'upload', etc.
+
+  try {
+    const res = await fetch('http://localhost:5000/api/student-admin/upload-students-csv', {
+      method: 'POST',
+      body: formData,             // 👈 no JSON.stringify, no extra headers
+    });
+
+   const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Upload failed');
+      }
+
+      alert(`CSV imported successfully. Inserted ${data.insertedCount} students.`);
+      // 3. After success, refresh list from DB
+      await fetchStudents();
+    } catch (err) {
+      console.error('CSV upload error:', err);
+      alert('Failed to import CSV. Please check your file format or columns.');
+    } 
+};
+
 
   const filteredStudents = students.filter(
     (s) =>
@@ -71,6 +100,7 @@ export default function AdminStudents({
     const address = form.get("address")?.trim();
     const dept = form.get("dept")?.trim();
     const parentField = form.get("parent")?.trim();
+    const mentor = form.get("mentor")?.trim();
     const username = form.get("username")?.trim();
     const password = form.get("password");
 
@@ -96,6 +126,7 @@ export default function AdminStudents({
       Department: dept,
       Address: address,
       Parent: parentField,
+      Mentor:mentor,
       Username: username,
       Password: password,
     };
@@ -180,6 +211,11 @@ export default function AdminStudents({
         >
           {loading ? "Loading..." : "Refresh"}
         </button>
+        <label className="bg-green-600 text-white px-3 py-1 rounded cursor-pointer">
+  Import CSV
+  <input type="file" accept=".csv" onChange={importData} className="hidden" />
+</label>
+
       </div>
       
       {error && (
@@ -288,7 +324,8 @@ export default function AdminStudents({
       {loading && <p className="text-center mt-4 text-gray-500">Loading...</p>}
       
       <ul className="mt-4 space-y-2">
-        {filteredStudents.map((s, i) => (
+        {filteredStudents.map((s, i) => 
+        (
           <li key={s._id || s.roll + i} className="bg-white p-3 flex justify-between rounded shadow">
             <div>
               <strong className="text-gray-800">{escapeHtml(s.name)}</strong>{" "}
