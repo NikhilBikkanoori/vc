@@ -141,7 +141,7 @@ const Home = () => {
           <Link to="/home">Home</Link>
           <Link to="/admin">Admin</Link>
           <Link to="/student-login">Login</Link>
-          <Link to="/display">Display</Link>
+          {/* <Link to="/display">Display</Link> */}
           <a href="#features">Features</a>
           <a href="#stats">Statistics</a>
           <a href="#contact">Contact</a>

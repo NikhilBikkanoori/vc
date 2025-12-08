@@ -5,7 +5,7 @@ import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import AdminStudents from "./admin/AdminStudents";
 import AdminFaculty from "./admin/AdminFaculty";
 import AdminParents from "./admin/AdminParents";
-import AdminDepartments from "./admin/AdminDepartments";
+// import AdminDepartments from "./admin/AdminDepartments";
 import AdminAttendance from "./admin/AdminAttendance";
 import AdminExams from "./admin/AdminExams";
 import AdminFees from "./admin/AdminFees";
@@ -123,10 +123,10 @@ export default function AdminPanel() {
     () => localStorage.setItem("parents", JSON.stringify(parents)),
     [parents]
   );
-  useEffect(
-    () => localStorage.setItem("departments", JSON.stringify(departments)),
-    [departments]
-  );
+  // useEffect(
+  //   () => localStorage.setItem("departments", JSON.stringify(departments)),
+  //   [departments]
+  // );
   useEffect(
     () => localStorage.setItem("attendance", JSON.stringify(attendance)),
     [attendance]
@@ -205,7 +205,7 @@ export default function AdminPanel() {
       students,
       faculty,
       parents,
-      departments,
+      // departments,
       attendance,
       exams,
       fees,
@@ -228,7 +228,7 @@ export default function AdminPanel() {
       try {
         const d = JSON.parse(r.result);
         if (d.users) setUsers(d.users);
-        ["students", "faculty", "parents", "departments", "attendance", "exams", "fees"].forEach(
+        ["students", "faculty", "parents", "attendance", "exams", "fees"].forEach(
           (k) => {
             if (d[k]) {
               if (k === "students") setStudents(d[k]);
@@ -352,7 +352,6 @@ export default function AdminPanel() {
               "students",
               "faculty",
               "parents",
-              "departments",
               "attendance",
               "exams",
               "fees",
@@ -416,7 +415,7 @@ export default function AdminPanel() {
                 />
               }
             />
-            <Route
+            {/* <Route
               path="/departments"
               element={
                 <AdminDepartments
@@ -426,7 +425,7 @@ export default function AdminPanel() {
                   escapeHtml={escapeHtml}
                 />
               }
-            />
+            /> */}
             <Route
               path="/attendance"
               element={

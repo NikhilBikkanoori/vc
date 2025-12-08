@@ -14,7 +14,7 @@ import ParentProfile from '../pages/ParentProfile';
 import AddStudent from "../pages/AddStudent";
 import ManageUsers from '../pages/ManageUsers.';
 import AdminPanel from '../pages/Admin';
-import Display from '../pages/display';
+//import Display from '../pages/display';
 
 function AppRoutes() {
   return (
@@ -34,7 +34,7 @@ function AppRoutes() {
       <Route path="/parent-profile" element={<ParentProfile />} />
       <Route path="/add-student" element={<AddStudent />} />
       <Route path="/manageuser" element={<ManageUsers />} />
-      <Route path="/display" element={<Display />} />
+      {/* <Route path="/display" element={<Display />} /> */}
     </Routes>
   );
 }
