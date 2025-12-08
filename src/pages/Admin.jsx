@@ -339,7 +339,7 @@ export default function AdminPanel() {
               "students",
               "faculty",
               "parents",
-              "attendance",
+              // "attendance",
               "exams",
               "fees",
               "admins",

@@ -24,6 +24,10 @@ const Header = () => {
       font-size: 1.8em;
       font-weight: bold;
       margin: 0;
+      animation: none;
+      transition: none;
+      transform: none;
+      position: relative;
     }
 
     nav {
