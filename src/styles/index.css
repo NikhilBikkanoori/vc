@@ -32,6 +32,10 @@ header h1 {
   color: linear-gradient(135deg, var(--c1), var(--c4));
   font-size: 1.8em;
   font-weight: bold;
+  animation: none;
+  transition: none;
+  transform: none;
+  position: relative;
 }
 
 nav a {

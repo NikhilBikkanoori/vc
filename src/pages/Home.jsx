@@ -39,6 +39,10 @@ const Home = () => {
       background-clip: text;
       font-size: 1.8em;
       font-weight: bold;
+      animation: none;
+      transition: none;
+      transform: none;
+      position: relative;
     }
 
     .home-nav a {
