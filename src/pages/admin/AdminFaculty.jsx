@@ -24,7 +24,7 @@ export default function AdminFaculty({
   const fetchFaculty = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/get-fac`);
+      const res = await axios.get(`${API_BASE}/get-faculties`);
       // Map API fields to local state fields
       const mapped = res.data.map((f) => ({
         _id: f._id,
@@ -49,6 +49,33 @@ export default function AdminFaculty({
       setLoading(false);
     }
   };
+const importData = async (e) => {
+  const csv = e.target.files[0];
+  if (!csv) return;
+
+  const formData = new FormData();
+  formData.append('file', csv);   // 👈 MUST be 'file', not 'csvFile', 'upload', etc.
+
+  try {
+    const res = await fetch('http://localhost:5000/api/faculty-admin/upload-faculty-csv', {
+      method: 'POST',
+      body: formData,             // 👈 no JSON.stringify, no extra headers
+    });
+
+   const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Upload failed');
+      }
+
+      alert(`CSV imported successfully. Inserted ${data.insertedCount} faculty.`);
+      // 3. After success, refresh list from DB
+      await fetchFaculty();
+    } catch (err) {
+      console.error('CSV upload error:', err);
+      alert('Failed to import CSV. Please check your file format or columns.');
+    } 
+};
 
   const filteredFaculty = faculty.filter(
     (f) =>
@@ -130,14 +157,14 @@ export default function AdminFaculty({
     }
   }
 
-  async function handleDelete(facultyMember, idx) {
+  async function handleDelete(facultyMember, username) {
     if (!window.confirm(`Delete faculty "${facultyMember.name}" and their credentials?`)) {
       return;
     }
 
     try {
       setLoading(true);
-      await axios.delete(`${API_BASE}/delete-fac/${facultyMember.fid}`);
+      await axios.delete(`${API_BASE}/delete-faculty/${facultyMember.username}`);
       alert("Faculty deleted successfully!");
       await fetchFaculty();
     } catch (err) {
@@ -184,7 +211,12 @@ export default function AdminFaculty({
           disabled={loading}
         >
           {loading ? "Loading..." : "Refresh"}
-        </button>
+          </button>
+          <label className="bg-green-600 text-white px-3 py-1 rounded cursor-pointer">
+            Import CSV
+            <input type="file" accept=".csv" onChange={importData} className="hidden" />
+          </label>
+     
       </div>
 
       {error && (
@@ -319,7 +351,7 @@ export default function AdminFaculty({
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(f, i)}
+                onClick={() => handleDelete(f, f.username)}
                 className="bg-red-500 text-white px-2 py-1 rounded text-sm"
                 disabled={loading}
               >

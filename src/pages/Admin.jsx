@@ -5,8 +5,8 @@ import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import AdminStudents from "./admin/AdminStudents";
 import AdminFaculty from "./admin/AdminFaculty";
 import AdminParents from "./admin/AdminParents";
-// import AdminDepartments from "./admin/AdminDepartments";
-import AdminAttendance from "./admin/AdminAttendance";
+//import AdminDepartments from "./admin/AdminDepartments";
+//import AdminAttendance from "./admin/AdminAttendance";
 import AdminExams from "./admin/AdminExams";
 import AdminFees from "./admin/AdminFees";
 import AdminAdmins from "./admin/AdminAdmins";
@@ -64,14 +64,7 @@ export default function AdminPanel() {
       return [];
     }
   });
-  const [attendance, setAttendance] = useState(() => {
-    try {
-      const val = localStorage.getItem("attendance");
-      return val && val !== "undefined" ? JSON.parse(val) : [];
-    } catch {
-      return [];
-    }
-  });
+  
   const [exams, setExams] = useState(() => {
     try {
       const val = localStorage.getItem("exams");
@@ -123,14 +116,11 @@ export default function AdminPanel() {
     () => localStorage.setItem("parents", JSON.stringify(parents)),
     [parents]
   );
-  // useEffect(
-  //   () => localStorage.setItem("departments", JSON.stringify(departments)),
-  //   [departments]
-  // );
   useEffect(
-    () => localStorage.setItem("attendance", JSON.stringify(attendance)),
-    [attendance]
+    () => localStorage.setItem("departments", JSON.stringify(departments)),
+    [departments]
   );
+  
   useEffect(() => localStorage.setItem("exams", JSON.stringify(exams)), [exams]);
   useEffect(() => localStorage.setItem("fees", JSON.stringify(fees)), [fees]);
   useEffect(
@@ -205,8 +195,8 @@ export default function AdminPanel() {
       students,
       faculty,
       parents,
-      // departments,
-      attendance,
+      departments,
+      
       exams,
       fees,
     };
@@ -228,14 +218,14 @@ export default function AdminPanel() {
       try {
         const d = JSON.parse(r.result);
         if (d.users) setUsers(d.users);
-        ["students", "faculty", "parents", "attendance", "exams", "fees"].forEach(
+        ["students", "faculty", "parents", "departments", "attendance", "exams", "fees"].forEach(
           (k) => {
             if (d[k]) {
               if (k === "students") setStudents(d[k]);
               if (k === "faculty") setFaculty(d[k]);
               if (k === "parents") setParents(d[k]);
               if (k === "departments") setDepartments(d[k]);
-              if (k === "attendance") setAttendance(d[k]);
+             
               if (k === "exams") setExams(d[k]);
               if (k === "fees") setFees(d[k]);
             }
@@ -323,9 +313,22 @@ export default function AdminPanel() {
       <nav className="bg-purple-700 text-white px-6 py-4 flex justify-between items-center">
         <h1 className="text-xl font-bold">Admin Panel (React)</h1>
         <div className="flex gap-2 items-center">
-          
-          
-          
+          <button
+            onClick={exportData}
+            className="bg-blue-500 px-3 py-1 rounded"
+          >
+            Export JSON
+          </button>
+          <label className="bg-green-600 px-3 py-1 rounded cursor-pointer">
+            Import{" "}
+            <input type="file" onChange={importData} className="hidden" />
+          </label>
+          <button
+            onClick={() => window.print()}
+            className="bg-yellow-500 px-3 py-1 rounded"
+          >
+            Print
+          </button>
           <button onClick={logout} className="bg-red-500 px-3 py-1 rounded">
             Logout
           </button>
@@ -339,7 +342,7 @@ export default function AdminPanel() {
               "students",
               "faculty",
               "parents",
-              "attendance",
+              "departments",
               "exams",
               "fees",
               "admins",
@@ -402,27 +405,8 @@ export default function AdminPanel() {
                 />
               }
             />
-            {/* <Route
-              path="/departments"
-              element={
-                <AdminDepartments
-                  departments={departments}
-                  setDepartments={setDepartments}
-                  faculty={faculty}
-                  escapeHtml={escapeHtml}
-                />
-              }
-            /> */}
-            <Route
-              path="/attendance"
-              element={
-                <AdminAttendance
-                  attendance={attendance}
-                  setAttendance={setAttendance}
-                  escapeHtml={escapeHtml}
-                />
-              }
-            />
+            
+            
             <Route
               path="/exams"
               element={
