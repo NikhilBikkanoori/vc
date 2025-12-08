@@ -35,11 +35,38 @@ export default function AdminParents({ escapeHtml }) {
       console.error("Error fetching students:", err);
     }
   };
+  const importData = async (e) => {
+  const csv = e.target.files[0];
+  if (!csv) return;
+
+  const formData = new FormData();
+  formData.append('file', csv);   // 👈 MUST be 'file', not 'csvFile', 'upload', etc.
+
+  try {
+    const res = await fetch('http://localhost:5000/api/parent-admin/upload-parents-csv', {
+      method: 'POST',
+      body: formData,             // 👈 no JSON.stringify, no extra headers
+    });
+
+   const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Upload failed');
+      }
+
+      alert(`CSV imported successfully. Inserted ${data.insertedCount} parents.`);
+      // 3. After success, refresh list from DB
+      await fetchParents();
+    } catch (err) {
+      console.error('CSV upload error:', err);
+      alert('Failed to import CSV. Please check your file format or columns.');
+    } 
+};
 
   const fetchParents = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE}/parents`);
+      const response = await axios.get(`${API_BASE}/get-parents`);
       // Map API fields to local state fields
       const mapped = response.data.map((p) => ({
         _id: p._id,
@@ -127,13 +154,13 @@ export default function AdminParents({ escapeHtml }) {
     pFormRef.current.reset();
   };
 
-  const handleDeleteParent = async (id, name) => {
+  const handleDeleteParent = async (Username, name) => {
     if (!window.confirm(`Are you sure you want to delete parent "${name}"?`)) {
       return;
     }
     try {
       setLoading(true);
-      await axios.delete(`${API_BASE}/parents/${id}`);
+      await axios.delete(`${API_BASE}/delete-parent/${Username}`);
       alert("Parent deleted successfully!");
       await fetchParents();
     } catch (err) {
@@ -155,6 +182,10 @@ export default function AdminParents({ escapeHtml }) {
         >
           {loading ? "Loading..." : "Refresh"}
         </button>
+        <label className="bg-green-600 text-white px-3 py-1 rounded cursor-pointer">
+  Import CSV
+  <input type="file" accept=".csv" onChange={importData} className="hidden" />
+</label>
       </div>
 
       {error && (
@@ -278,7 +309,7 @@ export default function AdminParents({ escapeHtml }) {
             </div>
             <div className="flex items-center">
               <button
-                onClick={() => handleDeleteParent(p._id, p.name)}
+                onClick={() => handleDeleteParent(p.username, p.name)}
                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
                 disabled={loading}
               >

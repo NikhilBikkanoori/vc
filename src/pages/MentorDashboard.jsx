@@ -247,7 +247,7 @@ const MentorDashboard = () => {
           <div className="logo">AIT</div>
           <div>
             <div style={{ fontSize: '14px', opacity: 0.95 }}>Mentor Dashboard</div>
-            <div style={{ fontSize: '12px', opacity: 0.85 }}>ABC Institute of Technology</div>
+            <div style={{ fontSize: '12px', opacity: 0.85 }}>Drop Shield</div>
           </div>
         </div>
 
