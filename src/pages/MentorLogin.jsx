@@ -19,7 +19,7 @@ const MentorLogin = () => {
       });
 
       // Fetch all faculty and find the logged in one by username
-      const facultyRes = await axios.get("http://localhost:5000/api/faculty-admin/get-fac");
+      const facultyRes = await axios.get("http://localhost:5000/api/faculty-admin/get-faculties");
       const loggedInFaculty = facultyRes.data.find(f => f.username === mentorId);
       
       // Store full faculty info in localStorage
